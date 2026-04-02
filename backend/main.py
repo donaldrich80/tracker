@@ -6,17 +6,18 @@ import os
 from backend.database import create_tables
 from backend.api import projects, cards, events, search, webhooks
 from backend.ws.router import ws_router
-from backend.mcp.server import mcp_app
+from backend.mcp.server import mcp, mcp_app
 from backend.scanner.detector import scan_projects
 from backend.database import AsyncSessionLocal
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await create_tables()
-    async with AsyncSessionLocal() as db:
-        await scan_projects(db)
-    yield
+    async with mcp.session_manager.run():
+        await create_tables()
+        async with AsyncSessionLocal() as db:
+            await scan_projects(db)
+        yield
 
 
 app = FastAPI(title="Tracker", lifespan=lifespan)

@@ -1,0 +1,16 @@
+services:
+  tracker:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - tracker-data:/data
+      - ${PROJECTS_ROOT:-/Users/donaldrich/Projects}:/projects:ro
+    environment:
+      - DB_PATH=/data/tracker.db
+      - FRONTEND_DIST=/app/frontend/dist
+      - PROJECTS_ROOT=/projects
+    restart: unless-stopped
+
+volumes:
+  tracker-data:
